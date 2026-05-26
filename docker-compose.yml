@@ -194,6 +194,19 @@ services:
             - sail
         healthcheck:
             test: ["CMD", "curl", "--silent", "--fail", "http://localhost:3000/health"]
+
+    # local-only (reyem fork): Redis for RetainerCache (tag-based cache TTL=5min)
+    redis:
+        image: redis:7-alpine
+        networks:
+            - sail
+        volumes:
+            - 'sail-redis:/data'
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
 networks:
     reverse-proxy:
         name: "${NETWORK_NAME}"
@@ -206,4 +219,6 @@ volumes:
     sail-pgsql-test:
         driver: local
     sail-minio:
+        driver: local
+    sail-redis:
         driver: local
