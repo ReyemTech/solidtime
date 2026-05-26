@@ -1,0 +1,18 @@
+# Local-only override (reyem branch) for testing without the traefik reverse-proxy.
+# Maps host port 8080 -> sail laravel.test container port 80, so the app
+# is reachable at http://localhost:8080.
+#
+# Also forwards Vite dev server (5173) and Mailpit web UI (8025) for convenience.
+#
+# This file is intentionally additive to docker-compose.yml. To use:
+#   ./vendor/bin/sail down && ./vendor/bin/sail up -d
+# (docker compose auto-loads any docker-compose.override.yml in the same dir.)
+
+services:
+    laravel.test:
+        ports:
+            - '8080:80'
+            - '5173:5173'   # Vite HMR
+    mailpit:
+        ports:
+            - '8025:8025'   # Mailpit web UI
