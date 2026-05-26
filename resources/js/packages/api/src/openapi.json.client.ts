@@ -44,224 +44,6 @@ const InvitationResource = z
 const InvitationStoreRequest = z
     .object({ email: z.string().email(), role: z.enum(['admin', 'manager', 'employee']) })
     .passthrough();
-const InvoiceResource = z
-    .object({
-        id: z.string(),
-        organization_id: z.string(),
-        reference: z.string(),
-        seller_name: z.string(),
-        buyer_name: z.string(),
-        status: z.string(),
-        date: z.string(),
-        due_at: z.string(),
-        paid_date: z.string(),
-        created_at: z.union([z.string(), z.null()]),
-        updated_at: z.union([z.string(), z.null()]),
-    })
-    .passthrough();
-const InvoiceCollection = z.array(InvoiceResource);
-const InvoiceDiscountType = z.enum(['percentage', 'fixed']);
-const InvoiceStoreRequest = z
-    .object({
-        due_at: z.union([z.string(), z.null()]).optional(),
-        paid_date: z.union([z.string(), z.null()]).optional(),
-        seller_name: z.string(),
-        seller_vatin: z.union([z.string(), z.null()]).optional(),
-        seller_address_line_1: z.union([z.string(), z.null()]).optional(),
-        seller_address_line_2: z.union([z.string(), z.null()]).optional(),
-        seller_address_line_3: z.union([z.string(), z.null()]).optional(),
-        seller_address_post_code: z.union([z.string(), z.null()]).optional(),
-        seller_address_city: z.union([z.string(), z.null()]).optional(),
-        seller_address_country: z.union([z.string(), z.null()]).optional(),
-        seller_phone: z.union([z.string(), z.null()]).optional(),
-        seller_email: z.union([z.string(), z.null()]).optional(),
-        buyer_name: z.string(),
-        buyer_vatin: z.union([z.string(), z.null()]).optional(),
-        buyer_address_line_1: z.union([z.string(), z.null()]).optional(),
-        buyer_address_line_2: z.union([z.string(), z.null()]).optional(),
-        buyer_address_line_3: z.union([z.string(), z.null()]).optional(),
-        buyer_address_post_code: z.union([z.string(), z.null()]).optional(),
-        buyer_address_city: z.union([z.string(), z.null()]).optional(),
-        buyer_address_country: z.union([z.string(), z.null()]).optional(),
-        buyer_phone: z.union([z.string(), z.null()]).optional(),
-        buyer_email: z.union([z.string(), z.null()]).optional(),
-        date: z.string(),
-        billing_period_start: z.union([z.string(), z.null()]).optional(),
-        billing_period_end: z.union([z.string(), z.null()]).optional(),
-        reference: z.string(),
-        currency: z.string(),
-        payment_iban: z.union([z.string(), z.null()]).optional(),
-        tax_rate: z.number().int().gte(0).lte(2147483647).optional(),
-        discount_amount: z.number().int().gte(0).lte(9223372036854776000).optional(),
-        discount_type: InvoiceDiscountType.optional(),
-        footer: z.union([z.string(), z.null()]).optional(),
-        notes: z.union([z.string(), z.null()]).optional(),
-        payment_terms: z.union([z.string(), z.null()]).optional(),
-        is_eu_reverse_charge: z.boolean().optional(),
-        entries: z
-            .array(
-                z
-                    .object({
-                        name: z.string(),
-                        description: z.union([z.string(), z.null()]).optional(),
-                        unit_price: z.number().int().gte(0).lte(9223372036854776000),
-                        quantity: z.number().gte(0).lte(99999999),
-                    })
-                    .passthrough()
-            )
-            .optional(),
-    })
-    .passthrough();
-const InvoiceEntryResource = z
-    .object({
-        id: z.string(),
-        invoice_id: z.string(),
-        name: z.string(),
-        description: z.union([z.string(), z.null()]),
-        unit_price: z.number().int(),
-        quantity: z.number(),
-        order_index: z.number().int(),
-        created_at: z.union([z.string(), z.null()]),
-        updated_at: z.union([z.string(), z.null()]),
-    })
-    .passthrough();
-const DetailedInvoiceResource = z
-    .object({
-        id: z.string(),
-        organization_id: z.string(),
-        reference: z.string(),
-        seller_name: z.string(),
-        seller_vatin: z.string(),
-        seller_address_line_1: z.string(),
-        seller_address_line_2: z.string(),
-        seller_address_line_3: z.string(),
-        seller_address_post_code: z.string(),
-        seller_address_city: z.string(),
-        seller_address_country: z.string(),
-        seller_phone: z.string(),
-        seller_email: z.string(),
-        buyer_name: z.string(),
-        buyer_vatin: z.string(),
-        buyer_address_line_1: z.string(),
-        buyer_address_line_2: z.string(),
-        buyer_address_line_3: z.string(),
-        buyer_address_post_code: z.string(),
-        buyer_address_city: z.string(),
-        buyer_address_country: z.string(),
-        buyer_phone: z.string(),
-        buyer_email: z.string(),
-        paid_date: z.string(),
-        due_at: z.string(),
-        discount_type: z.string(),
-        discount_amount: z.number().int(),
-        tax_rate: z.number().int(),
-        payment_iban: z.string(),
-        status: z.string(),
-        currency: z.string(),
-        date: z.string(),
-        footer: z.string(),
-        notes: z.string(),
-        payment_terms: z.string(),
-        is_eu_reverse_charge: z.string(),
-        billing_period_start: z.string(),
-        billing_period_end: z.string(),
-        created_at: z.union([z.string(), z.null()]),
-        updated_at: z.union([z.string(), z.null()]),
-        entries: z.array(InvoiceEntryResource),
-    })
-    .passthrough();
-const InvoiceStatus = z.enum(['draft', 'sent', 'cancelled']);
-const InvoiceUpdateRequest = z
-    .object({
-        status: InvoiceStatus,
-        due_at: z.union([z.string(), z.null()]),
-        paid_date: z.union([z.string(), z.null()]),
-        seller_name: z.string(),
-        seller_vatin: z.union([z.string(), z.null()]),
-        seller_address_line_1: z.union([z.string(), z.null()]),
-        seller_address_line_2: z.union([z.string(), z.null()]),
-        seller_address_line_3: z.union([z.string(), z.null()]),
-        seller_address_post_code: z.union([z.string(), z.null()]),
-        seller_address_city: z.union([z.string(), z.null()]),
-        seller_address_country: z.union([z.string(), z.null()]),
-        seller_phone: z.union([z.string(), z.null()]),
-        seller_email: z.union([z.string(), z.null()]),
-        buyer_name: z.string(),
-        buyer_vatin: z.union([z.string(), z.null()]),
-        buyer_address_line_1: z.union([z.string(), z.null()]),
-        buyer_address_line_2: z.union([z.string(), z.null()]),
-        buyer_address_line_3: z.union([z.string(), z.null()]),
-        buyer_address_post_code: z.union([z.string(), z.null()]),
-        buyer_address_city: z.union([z.string(), z.null()]),
-        buyer_address_country: z.union([z.string(), z.null()]),
-        buyer_phone: z.union([z.string(), z.null()]),
-        buyer_email: z.union([z.string(), z.null()]),
-        date: z.string(),
-        billing_period_start: z.union([z.string(), z.null()]),
-        billing_period_end: z.union([z.string(), z.null()]),
-        reference: z.string(),
-        currency: z.string(),
-        payment_iban: z.union([z.string(), z.null()]),
-        tax_rate: z.number().int().gte(0).lte(2147483647),
-        discount_amount: z.number().int().gte(0).lte(9223372036854776000),
-        discount_type: InvoiceDiscountType,
-        footer: z.union([z.string(), z.null()]),
-        notes: z.union([z.string(), z.null()]),
-        payment_terms: z.union([z.string(), z.null()]),
-        is_eu_reverse_charge: z.boolean(),
-        entries: z.array(
-            z
-                .object({
-                    id: z.union([z.string(), z.null()]).optional(),
-                    name: z.string(),
-                    description: z.union([z.string(), z.null()]).optional(),
-                    unit_price: z.number().int().gte(0).lte(9223372036854776000),
-                    quantity: z.number().gte(0).lte(99999999),
-                })
-                .passthrough()
-        ),
-    })
-    .partial()
-    .passthrough();
-const InvoiceDownloadRequest = z.object({ with_e_invoice: z.boolean() }).passthrough();
-const InvoiceSettingResource = z
-    .object({
-        seller_name: z.union([z.string(), z.null()]),
-        seller_vatin: z.union([z.string(), z.null()]),
-        seller_address_line_1: z.union([z.string(), z.null()]),
-        seller_address_line_2: z.union([z.string(), z.null()]),
-        seller_address_line_3: z.union([z.string(), z.null()]),
-        seller_address_post_code: z.union([z.string(), z.null()]),
-        seller_address_city: z.union([z.string(), z.null()]),
-        seller_address_country: z.union([z.string(), z.null()]),
-        seller_phone: z.union([z.string(), z.null()]),
-        seller_email: z.union([z.string(), z.null()]),
-        footer_default: z.union([z.string(), z.null()]),
-        notes_default: z.union([z.string(), z.null()]),
-        tax_rate_default: z.union([z.number(), z.null()]),
-        e_invoicing_enabled: z.boolean(),
-        organization_id: z.string(),
-    })
-    .passthrough();
-const InvoiceSettingUpdateRequest = z
-    .object({
-        seller_name: z.union([z.string(), z.null()]),
-        seller_vatin: z.union([z.string(), z.null()]),
-        seller_address_line_1: z.union([z.string(), z.null()]),
-        seller_address_line_2: z.union([z.string(), z.null()]),
-        seller_address_line_3: z.union([z.string(), z.null()]),
-        seller_address_post_code: z.union([z.string(), z.null()]),
-        seller_address_city: z.union([z.string(), z.null()]),
-        seller_address_country: z.union([z.string(), z.null()]),
-        seller_phone: z.union([z.string(), z.null()]),
-        seller_email: z.union([z.string(), z.null()]),
-        footer_default: z.union([z.string(), z.null()]),
-        notes_default: z.union([z.string(), z.null()]),
-        tax_rate_default: z.union([z.number(), z.null()]),
-        e_invoicing_enabled: z.boolean(),
-    })
-    .partial()
-    .passthrough();
 const MemberResource = z
     .object({
         id: z.string(),
@@ -273,9 +55,11 @@ const MemberResource = z
         billable_rate: z.union([z.number(), z.null()]),
     })
     .passthrough();
-const Role = z.enum(['owner', 'admin', 'manager', 'employee', 'placeholder']);
 const MemberUpdateRequest = z
-    .object({ role: Role, billable_rate: z.union([z.number(), z.null()]) })
+    .object({
+        role: z.enum(['owner', 'admin', 'manager', 'employee', 'placeholder']),
+        billable_rate: z.union([z.number(), z.null()]),
+    })
     .partial()
     .passthrough();
 const MemberMergeIntoRequest = z.object({ member_id: z.string() }).partial().passthrough();
@@ -334,11 +118,36 @@ const OrganizationUpdateRequest = z
         employees_can_see_billable_rates: z.boolean(),
         employees_can_manage_tasks: z.boolean(),
         prevent_overlapping_time_entries: z.boolean(),
-        number_format: NumberFormat,
-        currency_format: CurrencyFormat,
-        date_format: DateFormat,
-        interval_format: IntervalFormat,
-        time_format: TimeFormat,
+        number_format: z.enum([
+            'point-comma',
+            'comma-point',
+            'space-comma',
+            'space-point',
+            'apostrophe-point',
+        ]),
+        currency_format: z.enum([
+            'iso-code-before-with-space',
+            'iso-code-after-with-space',
+            'symbol-before',
+            'symbol-after',
+            'symbol-before-with-space',
+            'symbol-after-with-space',
+        ]),
+        date_format: z.enum([
+            'point-separated-d-m-yyyy',
+            'slash-separated-mm-dd-yyyy',
+            'slash-separated-dd-mm-yyyy',
+            'hyphen-separated-dd-mm-yyyy',
+            'hyphen-separated-mm-dd-yyyy',
+            'hyphen-separated-yyyy-mm-dd',
+        ]),
+        interval_format: z.enum([
+            'decimal',
+            'hours-minutes',
+            'hours-minutes-colon-separated',
+            'hours-minutes-seconds-colon-separated',
+        ]),
+        time_format: z.enum(['12-hours', '24-hours']),
     })
     .partial()
     .passthrough();
@@ -406,30 +215,6 @@ const ReportResource = z
         updated_at: z.string(),
     })
     .passthrough();
-const TimeEntryAggregationType = z.enum([
-    'day',
-    'week',
-    'month',
-    'year',
-    'user',
-    'project',
-    'task',
-    'client',
-    'billable',
-    'description',
-    'tag',
-]);
-const TimeEntryAggregationTypeInterval = z.enum(['day', 'week', 'month', 'year']);
-const Weekday = z.enum([
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-    'sunday',
-]);
-const TimeEntryRoundingType = z.enum(['up', 'down', 'nearest']);
 const ReportStoreRequest = z
     .object({
         name: z.string().max(255),
@@ -447,12 +232,49 @@ const ReportStoreRequest = z
                 project_ids: z.union([z.array(z.string()), z.null()]).optional(),
                 tag_ids: z.union([z.array(z.string()), z.null()]).optional(),
                 task_ids: z.union([z.array(z.string()), z.null()]).optional(),
-                group: TimeEntryAggregationType,
-                sub_group: TimeEntryAggregationType,
-                history_group: TimeEntryAggregationTypeInterval,
-                week_start: Weekday.optional(),
+                group: z.enum([
+                    'day',
+                    'week',
+                    'month',
+                    'year',
+                    'user',
+                    'project',
+                    'task',
+                    'client',
+                    'billable',
+                    'description',
+                    'tag',
+                ]),
+                sub_group: z.enum([
+                    'day',
+                    'week',
+                    'month',
+                    'year',
+                    'user',
+                    'project',
+                    'task',
+                    'client',
+                    'billable',
+                    'description',
+                    'tag',
+                ]),
+                history_group: z.enum(['day', 'week', 'month', 'year']),
+                week_start: z
+                    .union([
+                        z.enum([
+                            'monday',
+                            'tuesday',
+                            'wednesday',
+                            'thursday',
+                            'friday',
+                            'saturday',
+                            'sunday',
+                        ]),
+                        z.null(),
+                    ])
+                    .optional(),
                 timezone: z.union([z.string(), z.null()]).optional(),
-                rounding_type: TimeEntryRoundingType.optional(),
+                rounding_type: z.union([z.enum(['up', 'down', 'nearest']), z.null()]).optional(),
                 rounding_minutes: z.union([z.number(), z.null()]).optional(),
             })
             .passthrough(),
@@ -594,6 +416,116 @@ const DetailedWithDataReportResource = z
             .passthrough(),
     })
     .passthrough();
+const RetainerResource = z
+    .object({
+        id: z.string(),
+        organization_id: z.string(),
+        client_id: z.string(),
+        name: z.string(),
+        description: z.union([z.string(), z.null()]),
+        period_mode: z.string(),
+        period_unit: z.string(),
+        seconds_per_period: z.union([z.number(), z.null()]),
+        anchor_date: z.union([z.string(), z.null()]),
+        starts_at: z.union([z.string(), z.null()]),
+        ends_at: z.union([z.string(), z.null()]),
+        billable_only: z.boolean(),
+        hard_cap_enabled: z.boolean(),
+        hard_cap_scope: z.string(),
+        hard_cap_enforcement: z.string(),
+        hard_cap_cumulative_seconds: z.union([z.number(), z.null()]),
+        sub_cap_mode: z.string(),
+        created_at: z.union([z.string(), z.null()]),
+        updated_at: z.union([z.string(), z.null()]),
+    })
+    .passthrough();
+const RetainerCollection = z.array(RetainerResource);
+const RetainerStoreRequest = z
+    .object({
+        client_id: z.string(),
+        name: z.string().max(255),
+        description: z.union([z.string(), z.null()]).optional(),
+        period_mode: z.enum(['calendar', 'anchor', 'explicit']),
+        period_unit: z.union([z.enum(['weekly', 'monthly', 'quarterly']), z.null()]).optional(),
+        seconds_per_period: z.union([z.number(), z.null()]).optional(),
+        anchor_date: z.union([z.string(), z.null()]).optional(),
+        starts_at: z.string().datetime({ offset: true }),
+        ends_at: z.union([z.string(), z.null()]).optional(),
+        billable_only: z.boolean().optional(),
+        hard_cap_enabled: z.boolean().optional(),
+        hard_cap_scope: z.union([z.enum(['per_period', 'cumulative']), z.null()]).optional(),
+        hard_cap_enforcement: z.union([z.enum(['block', 'flag', 'approval']), z.null()]).optional(),
+        hard_cap_cumulative_seconds: z.union([z.number(), z.null()]).optional(),
+        sub_cap_mode: z.union([z.enum(['soft', 'strict']), z.null()]).optional(),
+    })
+    .passthrough();
+const RetainerUpdateRequest = z
+    .object({
+        name: z.string().max(255),
+        description: z.union([z.string(), z.null()]),
+        period_mode: z.enum(['calendar', 'anchor', 'explicit']),
+        period_unit: z.union([z.enum(['weekly', 'monthly', 'quarterly']), z.null()]),
+        seconds_per_period: z.union([z.number(), z.null()]),
+        anchor_date: z.union([z.string(), z.null()]),
+        starts_at: z.string().datetime({ offset: true }),
+        ends_at: z.union([z.string(), z.null()]),
+        billable_only: z.boolean(),
+        hard_cap_enabled: z.boolean(),
+        hard_cap_scope: z.union([z.enum(['per_period', 'cumulative']), z.null()]),
+        hard_cap_enforcement: z.union([z.enum(['block', 'flag', 'approval']), z.null()]),
+        hard_cap_cumulative_seconds: z.union([z.number(), z.null()]),
+        sub_cap_mode: z.enum(['soft', 'strict']),
+    })
+    .partial()
+    .passthrough();
+const RetainerStatusResource = z.string();
+const RetainerPeriodsReplaceRequest = z
+    .object({
+        periods: z
+            .array(
+                z
+                    .object({
+                        starts_at: z.string().datetime({ offset: true }),
+                        ends_at: z.string().datetime({ offset: true }),
+                        seconds_allocated: z.number().int().gte(1),
+                    })
+                    .passthrough()
+            )
+            .min(1),
+    })
+    .passthrough();
+const RetainerPeriodResource = z
+    .object({
+        id: z.string(),
+        retainer_id: z.string(),
+        starts_at: z.union([z.string(), z.null()]),
+        ends_at: z.union([z.string(), z.null()]),
+        seconds_allocated: z.number().int(),
+    })
+    .passthrough();
+const RetainerProjectCapResource = z
+    .object({
+        id: z.string(),
+        retainer_id: z.string(),
+        project_id: z.string(),
+        seconds_per_period: z.union([z.number(), z.null()]),
+        seconds_cumulative: z.union([z.number(), z.null()]),
+    })
+    .passthrough();
+const RetainerProjectCapStoreRequest = z
+    .object({
+        project_id: z.string(),
+        seconds_per_period: z.union([z.number(), z.null()]).optional(),
+        seconds_cumulative: z.union([z.number(), z.null()]).optional(),
+    })
+    .passthrough();
+const RetainerProjectCapUpdateRequest = z
+    .object({
+        seconds_per_period: z.union([z.number(), z.null()]),
+        seconds_cumulative: z.union([z.number(), z.null()]),
+    })
+    .partial()
+    .passthrough();
 const TagResource = z
     .object({ id: z.string(), name: z.string(), created_at: z.string(), updated_at: z.string() })
     .passthrough();
@@ -626,6 +558,7 @@ const TaskUpdateRequest = z
     })
     .passthrough();
 const start = z.union([z.string(), z.null()]).optional();
+const rounding_type = z.union([z.enum(['up', 'down', 'nearest']), z.null()]).optional();
 const rounding_minutes = z.union([z.number(), z.null()]).optional();
 const TimeEntryResource = z
     .object({
@@ -670,6 +603,25 @@ const TimeEntryUpdateMultipleRequest = z
             .passthrough(),
     })
     .passthrough();
+const group = z
+    .union([
+        z.enum([
+            'day',
+            'week',
+            'month',
+            'year',
+            'user',
+            'project',
+            'task',
+            'client',
+            'billable',
+            'description',
+            'tag',
+        ]),
+        z.null(),
+    ])
+    .optional();
+const history_group = z.union([z.enum(['day', 'week', 'month', 'year']), z.null()]);
 const TimeEntryUpdateRequest = z
     .object({
         member_id: z.string(),
@@ -683,6 +635,15 @@ const TimeEntryUpdateRequest = z
     })
     .partial()
     .passthrough();
+const Weekday = z.enum([
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
+]);
 const UserResource = z
     .object({
         id: z.string(),
@@ -714,19 +675,7 @@ export const schemas = {
     ImportRequest,
     InvitationResource,
     InvitationStoreRequest,
-    InvoiceResource,
-    InvoiceCollection,
-    InvoiceDiscountType,
-    InvoiceStoreRequest,
-    InvoiceEntryResource,
-    DetailedInvoiceResource,
-    InvoiceStatus,
-    InvoiceUpdateRequest,
-    InvoiceDownloadRequest,
-    InvoiceSettingResource,
-    InvoiceSettingUpdateRequest,
     MemberResource,
-    Role,
     MemberUpdateRequest,
     MemberMergeIntoRequest,
     NumberFormat,
@@ -743,14 +692,20 @@ export const schemas = {
     ProjectMemberStoreRequest,
     ProjectMemberUpdateRequest,
     ReportResource,
-    TimeEntryAggregationType,
-    TimeEntryAggregationTypeInterval,
-    Weekday,
-    TimeEntryRoundingType,
     ReportStoreRequest,
     DetailedReportResource,
     ReportUpdateRequest,
     DetailedWithDataReportResource,
+    RetainerResource,
+    RetainerCollection,
+    RetainerStoreRequest,
+    RetainerUpdateRequest,
+    RetainerStatusResource,
+    RetainerPeriodsReplaceRequest,
+    RetainerPeriodResource,
+    RetainerProjectCapResource,
+    RetainerProjectCapStoreRequest,
+    RetainerProjectCapUpdateRequest,
     TagResource,
     TagStoreRequest,
     TagUpdateRequest,
@@ -758,30 +713,20 @@ export const schemas = {
     TaskStoreRequest,
     TaskUpdateRequest,
     start,
+    rounding_type,
     rounding_minutes,
     TimeEntryResource,
     TimeEntryStoreRequest,
     TimeEntryUpdateMultipleRequest,
+    group,
+    history_group,
     TimeEntryUpdateRequest,
+    Weekday,
     UserResource,
     PersonalMembershipResource,
 };
 
 const endpoints = makeApi([
-    {
-        method: 'get',
-        path: '/v1/countries',
-        alias: 'getCountries',
-        requestFormat: 'json',
-        response: z.array(z.object({ code: z.string(), name: z.string() }).passthrough()),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-        ],
-    },
     {
         method: 'get',
         path: '/v1/currencies',
@@ -1390,6 +1335,42 @@ const endpoints = makeApi([
         ],
     },
     {
+        method: 'get',
+        path: '/v1/organizations/:organization/clients/:client/retainers',
+        alias: 'v1.retainers.for-client',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'client',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerCollection }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
         method: 'post',
         path: '/v1/organizations/:organization/export',
         alias: 'exportOrganization',
@@ -1709,384 +1690,6 @@ const endpoints = makeApi([
         ],
         response: z.void(),
         errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'get',
-        path: '/v1/organizations/:organization/invoice-settings',
-        alias: 'getInvoiceSettings',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.object({ data: InvoiceSettingResource }).passthrough(),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'put',
-        path: '/v1/organizations/:organization/invoice-settings',
-        alias: 'updateInvoiceSettings',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'body',
-                type: 'Body',
-                schema: InvoiceSettingUpdateRequest,
-            },
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.object({ data: InvoiceSettingResource }).passthrough(),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 422,
-                description: `Validation error`,
-                schema: z
-                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
-                    .passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'get',
-        path: '/v1/organizations/:organization/invoices',
-        alias: 'getInvoices',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-            {
-                name: 'page',
-                type: 'Query',
-                schema: z.number().int().gte(1).lte(2147483647).optional(),
-            },
-        ],
-        response: z.object({ data: InvoiceCollection }).passthrough(),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 422,
-                description: `Validation error`,
-                schema: z
-                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
-                    .passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'post',
-        path: '/v1/organizations/:organization/invoices',
-        alias: 'createInvoice',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'body',
-                type: 'Body',
-                schema: InvoiceStoreRequest,
-            },
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.object({ data: DetailedInvoiceResource }).passthrough(),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 422,
-                description: `Validation error`,
-                schema: z
-                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
-                    .passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'get',
-        path: '/v1/organizations/:organization/invoices/:invoice',
-        alias: 'getInvoice',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-            {
-                name: 'invoice',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.object({ data: DetailedInvoiceResource }).passthrough(),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'put',
-        path: '/v1/organizations/:organization/invoices/:invoice',
-        alias: 'updateInvoice',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'body',
-                type: 'Body',
-                schema: InvoiceUpdateRequest,
-            },
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-            {
-                name: 'invoice',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.object({ data: DetailedInvoiceResource }).passthrough(),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 422,
-                description: `Validation error`,
-                schema: z
-                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
-                    .passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'delete',
-        path: '/v1/organizations/:organization/invoices/:invoice',
-        alias: 'deleteInvoice',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-            {
-                name: 'invoice',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.void(),
-        errors: [
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'post',
-        path: '/v1/organizations/:organization/invoices/:invoice/download',
-        alias: 'downloadInvoice',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'body',
-                type: 'Body',
-                schema: z.object({ with_e_invoice: z.boolean() }).passthrough(),
-            },
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-            {
-                name: 'invoice',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.object({ download_link: z.string() }).passthrough(),
-        errors: [
-            {
-                status: 400,
-                description: `API exception`,
-                schema: z
-                    .object({ error: z.boolean(), key: z.string(), message: z.string() })
-                    .passthrough(),
-            },
-            {
-                status: 401,
-                description: `Unauthenticated`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 403,
-                description: `Authorization error`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 404,
-                description: `Not found`,
-                schema: z.object({ message: z.string() }).passthrough(),
-            },
-            {
-                status: 422,
-                description: `Validation error`,
-                schema: z
-                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
-                    .passthrough(),
-            },
-        ],
-    },
-    {
-        method: 'post',
-        path: '/v1/organizations/:organization/invoices/:invoice/download-e-invoice',
-        alias: 'downloadEInvoice',
-        requestFormat: 'json',
-        parameters: [
-            {
-                name: 'organization',
-                type: 'Path',
-                schema: z.string(),
-            },
-            {
-                name: 'invoice',
-                type: 'Path',
-                schema: z.string(),
-            },
-        ],
-        response: z.object({ download_link: z.string() }).passthrough(),
-        errors: [
-            {
-                status: 400,
-                description: `API exception`,
-                schema: z
-                    .object({ error: z.boolean(), key: z.string(), message: z.string() })
-                    .passthrough(),
-            },
             {
                 status: 401,
                 description: `Unauthenticated`,
@@ -3139,6 +2742,498 @@ const endpoints = makeApi([
     },
     {
         method: 'get',
+        path: '/v1/organizations/:organization/retainers',
+        alias: 'v1.retainers.index',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerCollection }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'post',
+        path: '/v1/organizations/:organization/retainers',
+        alias: 'v1.retainers.store',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: RetainerStoreRequest,
+            },
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerResource }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 422,
+                description: `Validation error`,
+                schema: z
+                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
+                    .passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v1/organizations/:organization/retainers/:retainer',
+        alias: 'v1.retainers.show',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerResource }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'put',
+        path: '/v1/organizations/:organization/retainers/:retainer',
+        alias: 'v1.retainers.update',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: RetainerUpdateRequest,
+            },
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerResource }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 422,
+                description: `Validation error`,
+                schema: z
+                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
+                    .passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'delete',
+        path: '/v1/organizations/:organization/retainers/:retainer',
+        alias: 'v1.retainers.destroy',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.void(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v1/organizations/:organization/retainers/:retainer/periods',
+        alias: 'v1.retainers.periods',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: z.array(z.string()) }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'put',
+        path: '/v1/organizations/:organization/retainers/:retainer/periods',
+        alias: 'v1.retainers.periods.replace',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: RetainerPeriodsReplaceRequest,
+            },
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: z.array(RetainerPeriodResource) }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 422,
+                description: `Validation error`,
+                schema: z
+                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
+                    .passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v1/organizations/:organization/retainers/:retainer/project-caps',
+        alias: 'v1.retainers.project-caps.index',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: z.array(RetainerProjectCapResource) }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'post',
+        path: '/v1/organizations/:organization/retainers/:retainer/project-caps',
+        alias: 'v1.retainers.project-caps.store',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: RetainerProjectCapStoreRequest,
+            },
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerProjectCapResource }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 422,
+                description: `Validation error`,
+                schema: z
+                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
+                    .passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'put',
+        path: '/v1/organizations/:organization/retainers/:retainer/project-caps/:cap',
+        alias: 'v1.retainers.project-caps.update',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'body',
+                type: 'Body',
+                schema: RetainerProjectCapUpdateRequest,
+            },
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'cap',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerProjectCapResource }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 422,
+                description: `Validation error`,
+                schema: z
+                    .object({ message: z.string(), errors: z.record(z.array(z.string())) })
+                    .passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'delete',
+        path: '/v1/organizations/:organization/retainers/:retainer/project-caps/:cap',
+        alias: 'v1.retainers.project-caps.destroy',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'cap',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.void(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'get',
+        path: '/v1/organizations/:organization/retainers/:retainer/status',
+        alias: 'v1.retainers.status',
+        requestFormat: 'json',
+        parameters: [
+            {
+                name: 'organization',
+                type: 'Path',
+                schema: z.string(),
+            },
+            {
+                name: 'retainer',
+                type: 'Path',
+                schema: z.string(),
+            },
+        ],
+        response: z.object({ data: RetainerStatusResource }).passthrough(),
+        errors: [
+            {
+                status: 401,
+                description: `Unauthenticated`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 403,
+                description: `Authorization error`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+            {
+                status: 404,
+                description: `Not found`,
+                schema: z.object({ message: z.string() }).passthrough(),
+            },
+        ],
+    },
+    {
+        method: 'get',
         path: '/v1/organizations/:organization/tags',
         alias: 'getTags',
         requestFormat: 'json',
@@ -3621,7 +3716,7 @@ Users with the permission &#x60;time-entries:view:own&#x60; can only use this en
             {
                 name: 'rounding_type',
                 type: 'Query',
-                schema: z.enum(['up', 'down', 'nearest']).optional(),
+                schema: rounding_type,
             },
             {
                 name: 'rounding_minutes',
@@ -3934,40 +4029,12 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
             {
                 name: 'group',
                 type: 'Query',
-                schema: z
-                    .enum([
-                        'day',
-                        'week',
-                        'month',
-                        'year',
-                        'user',
-                        'project',
-                        'task',
-                        'client',
-                        'billable',
-                        'description',
-                        'tag',
-                    ])
-                    .optional(),
+                schema: group,
             },
             {
                 name: 'sub_group',
                 type: 'Query',
-                schema: z
-                    .enum([
-                        'day',
-                        'week',
-                        'month',
-                        'year',
-                        'user',
-                        'project',
-                        'task',
-                        'client',
-                        'billable',
-                        'description',
-                        'tag',
-                    ])
-                    .optional(),
+                schema: group,
             },
             {
                 name: 'member_id',
@@ -4007,7 +4074,7 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
             {
                 name: 'rounding_type',
                 type: 'Query',
-                schema: z.enum(['up', 'down', 'nearest']).optional(),
+                schema: rounding_type,
             },
             {
                 name: 'rounding_minutes',
@@ -4156,7 +4223,7 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
             {
                 name: 'history_group',
                 type: 'Query',
-                schema: z.enum(['day', 'week', 'month', 'year']),
+                schema: history_group,
             },
             {
                 name: 'member_id',
@@ -4201,7 +4268,7 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
             {
                 name: 'rounding_type',
                 type: 'Query',
-                schema: z.enum(['up', 'down', 'nearest']).optional(),
+                schema: rounding_type,
             },
             {
                 name: 'rounding_minutes',
@@ -4329,7 +4396,7 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
             {
                 name: 'rounding_type',
                 type: 'Query',
-                schema: z.enum(['up', 'down', 'nearest']).optional(),
+                schema: rounding_type,
             },
             {
                 name: 'rounding_minutes',
