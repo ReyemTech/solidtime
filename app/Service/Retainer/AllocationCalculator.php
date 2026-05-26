@@ -11,6 +11,9 @@ use InvalidArgumentException;
 
 class AllocationCalculator
 {
+    /**
+     * @throws \InvalidArgumentException if recurring retainer is missing period_unit or seconds_per_period
+     */
     public function computeAllocated(Retainer $retainer, Carbon $asOf): int
     {
         $start = $retainer->starts_at->copy()->startOfDay();
@@ -51,8 +54,8 @@ class AllocationCalculator
 
             if ($nextPeriodStart->lte($asOf)) {
                 // This period is complete — count all effective days in it
-                $fullDays = $cursor->diffInDays($nextPeriodStart);
-                $effDays = $effPeriodStart->diffInDays($nextPeriodStart);
+                $fullDays = $this->daysBetween($cursor, $nextPeriodStart);
+                $effDays = $this->daysBetween($effPeriodStart, $nextPeriodStart);
                 if ($fullDays > 0) {
                     $allocated += (int) round(($effDays / $fullDays) * $rate);
                 }
@@ -61,7 +64,7 @@ class AllocationCalculator
             }
 
             // Partial (current) period
-            $fullDays = $cursor->diffInDays($nextPeriodStart);
+            $fullDays = $this->daysBetween($cursor, $nextPeriodStart);
             $usedDays = $this->usedDays($effPeriodStart, $cursor, $asOf);
             if ($fullDays > 0) {
                 $allocated += (int) round((max(0, $usedDays) / $fullDays) * $rate);
@@ -84,7 +87,7 @@ class AllocationCalculator
      */
     private function usedDays(Carbon $effPeriodStart, Carbon $cursor, Carbon $asOf): int
     {
-        $days = (int) $effPeriodStart->diffInDays($asOf);
+        $days = $this->daysBetween($effPeriodStart, $asOf);
 
         // Apply inclusive counting only when retainer started at the period boundary
         // and asOf is strictly after effPeriodStart (i.e., at least one day has elapsed).
@@ -113,15 +116,20 @@ class AllocationCalculator
                 break;
             }
 
-            $fullDays = $pStart->diffInDays($pNextStart);
+            $fullDays = $this->daysBetween($pStart, $pNextStart);
             // In explicit periods the retainer always starts at pStart, so use inclusive counting
-            $usedDays = $pStart->diffInDays($asOf) + 1;
+            $usedDays = $this->daysBetween($pStart, $asOf) + 1;
             if ($fullDays > 0) {
                 $allocated += (int) round(($usedDays / $fullDays) * $p->seconds_allocated);
             }
         }
 
         return $allocated;
+    }
+
+    private function daysBetween(Carbon $a, Carbon $b): int
+    {
+        return (int) $a->copy()->startOfDay()->utc()->diffInDays($b->copy()->startOfDay()->utc(), absolute: true);
     }
 
     private function periodStartFor(Carbon $date, RetainerPeriodUnit $unit): Carbon

@@ -147,6 +147,21 @@ class AllocationCalculatorTest extends TestCase
         $this->assertEqualsWithDelta(70 * 3600, $result, 3600);
     }
 
+    public function test_calendar_monthly_spans_dst_spring_forward_without_phantom_day_loss(): void
+    {
+        // US DST 2026: spring forward March 8 (lose 1h). A March retainer should still get full month allocation when fully elapsed.
+        $retainer = Retainer::factory()->make([
+            'period_mode' => RetainerPeriodMode::Calendar,
+            'period_unit' => RetainerPeriodUnit::Monthly,
+            'seconds_per_period' => 40 * 3600,
+            'starts_at' => Carbon::parse('2026-03-01'),
+        ]);
+
+        // Fully elapsed March: should be exactly 40h regardless of DST
+        $result = $this->calculator->computeAllocated($retainer, Carbon::parse('2026-04-01'));
+        $this->assertSame(40 * 3600, $result);
+    }
+
     public function test_clamps_to_ends_at(): void
     {
         $retainer = Retainer::factory()->make([
