@@ -68,6 +68,15 @@ Route::middleware([
         return Inertia::render('Clients');
     })->name('clients');
 
+    Route::get('/clients/{client}/retainers', function (\App\Models\Client $client) {
+        return Inertia::render('ClientRetainers', [
+            'client' => [
+                'id' => $client->id,
+                'name' => $client->name,
+            ],
+        ]);
+    })->name('clients.retainers');
+
     Route::get('/members', function () {
         return Inertia::render('Members', [
             'availableRoles' => array_values(Jetstream::$roles),

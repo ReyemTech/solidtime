@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArchiveBoxIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/20/solid';
+import { ArchiveBoxIcon, PencilSquareIcon, TrashIcon, ListBulletIcon } from '@heroicons/vue/20/solid';
 import type { Client } from '@/packages/api/src';
 import { canDeleteClients, canUpdateClients } from '@/utils/permissions';
 import {
@@ -8,6 +8,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/packages/ui/src';
+import { router } from '@inertiajs/vue3';
 
 const emit = defineEmits<{
     delete: [];
@@ -40,6 +41,14 @@ const props = defineProps<{
             </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="min-w-[150px]" align="end">
+            <DropdownMenuItem
+                :aria-label="'Retainers for ' + props.client.name"
+                data-testid="client_retainers"
+                class="flex items-center space-x-3 cursor-pointer"
+                @click="router.visit(`/clients/${props.client.id}/retainers`)">
+                <ListBulletIcon class="w-5 text-icon-active" />
+                <span>Retainers</span>
+            </DropdownMenuItem>
             <DropdownMenuItem
                 v-if="canUpdateClients()"
                 :aria-label="'Edit Client ' + props.client.name"
