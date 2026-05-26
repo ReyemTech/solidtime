@@ -19,6 +19,7 @@ import { useFocus } from '@vueuse/core';
 import { autoUpdate, flip, limitShift, offset, shift, useFloating } from '@floating-ui/vue';
 import TimeTrackerRecentlyTrackedEntry from '@/packages/ui/src/TimeTracker/TimeTrackerRecentlyTrackedEntry.vue';
 import { useSelectEvents } from '@/packages/ui/src/utils/select';
+import TimeEntryRetainerBadge from '@/Components/Common/Retainer/TimeEntryRetainerBadge.vue';
 
 const currentTimeEntry = defineModel<TimeEntry>('currentTimeEntry', {
     required: true,
@@ -268,6 +269,8 @@ useSelectEvents(
                         :tasks="tasks"
                         :enable-estimated-time="enableEstimatedTime"
                         @changed="updateProject"></TimeTrackerProjectTaskDropdown>
+                    <TimeEntryRetainerBadge
+                        :project-id="currentTimeEntry.project_id ?? null" />
                 </div>
                 <div class="flex items-center space-x-0 @4xl:space-x-2 px-2 @4xl:px-4 shrink-0">
                     <TimeTrackerTagDropdown
