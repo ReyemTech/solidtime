@@ -12,6 +12,9 @@ use App\Models\OrganizationInvitation;
 use App\Models\Passport\Token;
 use App\Models\Project;
 use App\Models\ProjectMember;
+use App\Models\Retainer;
+use App\Models\RetainerPeriod;
+use App\Models\RetainerProjectCap;
 use App\Models\Tag;
 use App\Models\Task;
 use App\Models\TimeEntry;
@@ -64,6 +67,9 @@ class AppServiceProvider extends ServiceProvider
             'organization-invitation' => OrganizationInvitation::class,
             'project' => Project::class,
             'project-member' => ProjectMember::class,
+            'retainer' => Retainer::class,
+            'retainer-period' => RetainerPeriod::class,
+            'retainer-project-cap' => RetainerProjectCap::class,
             'tag' => Tag::class,
             'task' => Task::class,
             'time-entry' => TimeEntry::class,
