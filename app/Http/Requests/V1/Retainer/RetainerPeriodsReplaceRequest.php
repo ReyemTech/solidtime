@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Http\Requests\V1\Retainer;
 
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\V1\BaseFormRequest;
 
-class RetainerPeriodsReplaceRequest extends FormRequest
+class RetainerPeriodsReplaceRequest extends BaseFormRequest
 {
     /**
      * @return array<string, mixed>

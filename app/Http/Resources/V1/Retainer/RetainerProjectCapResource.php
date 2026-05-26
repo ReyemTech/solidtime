@@ -5,12 +5,12 @@ namespace App\Http\Resources\V1\Retainer;
 
 use App\Models\RetainerProjectCap;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\V1\BaseResource;
 
 /**
  * @property RetainerProjectCap $resource
  */
-class RetainerProjectCapResource extends JsonResource
+class RetainerProjectCapResource extends BaseResource
 {
     /**
      * @return array<string, mixed>

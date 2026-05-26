@@ -8,10 +8,10 @@ use App\Enums\RetainerHardCapScope;
 use App\Enums\RetainerPeriodMode;
 use App\Enums\RetainerPeriodUnit;
 use App\Enums\RetainerSubCapMode;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\V1\BaseFormRequest;
 use Illuminate\Validation\Rule;
 
-class RetainerUpdateRequest extends FormRequest
+class RetainerUpdateRequest extends BaseFormRequest
 {
     /**
      * @return array<string, mixed>

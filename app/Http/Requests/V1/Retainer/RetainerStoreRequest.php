@@ -9,10 +9,10 @@ use App\Enums\RetainerPeriodMode;
 use App\Enums\RetainerPeriodUnit;
 use App\Enums\RetainerSubCapMode;
 use App\Models\Organization;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\V1\BaseFormRequest;
 use Illuminate\Validation\Rule;
 
-class RetainerStoreRequest extends FormRequest
+class RetainerStoreRequest extends BaseFormRequest
 {
     /**
      * @return array<string, mixed>

@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace App\Http\Requests\V1\Retainer;
 
 use App\Models\Retainer;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\V1\BaseFormRequest;
 use Illuminate\Validation\Rule;
 
-class RetainerProjectCapStoreRequest extends FormRequest
+class RetainerProjectCapStoreRequest extends BaseFormRequest
 {
     /**
      * @return array<string, mixed>

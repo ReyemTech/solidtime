@@ -5,12 +5,12 @@ namespace App\Http\Resources\V1\Retainer;
 
 use App\Models\RetainerPeriod;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\V1\BaseResource;
 
 /**
  * @property RetainerPeriod $resource
  */
-class RetainerPeriodResource extends JsonResource
+class RetainerPeriodResource extends BaseResource
 {
     /**
      * @return array<string, mixed>
@@ -20,8 +20,8 @@ class RetainerPeriodResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'retainer_id' => $this->resource->retainer_id,
-            'starts_at' => $this->resource->starts_at->toDateString(),
-            'ends_at' => $this->resource->ends_at->toDateString(),
+            'starts_at' => $this->formatDate($this->resource->starts_at),
+            'ends_at' => $this->formatDate($this->resource->ends_at),
             'seconds_allocated' => $this->resource->seconds_allocated,
         ];
     }

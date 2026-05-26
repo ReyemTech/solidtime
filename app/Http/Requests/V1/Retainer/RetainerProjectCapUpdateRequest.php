@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\V1\Retainer;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\V1\BaseFormRequest;
 
-class RetainerProjectCapUpdateRequest extends FormRequest
+class RetainerProjectCapUpdateRequest extends BaseFormRequest
 {
     /**
      * @return array<string, mixed>
