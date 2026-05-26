@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Retainer;
@@ -94,6 +95,7 @@ class CapEnforcer
             return (int) $newDuration;
         }
         $oldDuration = Carbon::parse($origEnd)->diffInSeconds(Carbon::parse($origStart), absolute: true);
+
         return (int) ($newDuration - $oldDuration);
     }
 }

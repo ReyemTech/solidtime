@@ -16,7 +16,7 @@ class RetainerLookup
         return Retainer::query()
             ->where('client_id', $clientId)
             ->whereDate('starts_at', '<=', $day)
-            ->where(function ($q) use ($day) {
+            ->where(function ($q) use ($day): void {
                 $q->whereNull('ends_at')->orWhereDate('ends_at', '>=', $day);
             })
             ->first();

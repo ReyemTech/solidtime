@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Retainer;
@@ -16,6 +17,7 @@ class RetainerCache
     public function tracked(Retainer $retainer, Carbon $asOf, ?string $projectId = null): int
     {
         $key = $this->key($retainer, $asOf, $projectId);
+
         return (int) Cache::tags($this->tag($retainer))->remember(
             $key,
             self::TTL_SECONDS,

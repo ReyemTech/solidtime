@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Requests\V1\Retainer;
 
-use Illuminate\Contracts\Validation\Validator;
 use App\Http\Requests\V1\BaseFormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class RetainerPeriodsReplaceRequest extends BaseFormRequest
 {
@@ -23,12 +24,14 @@ class RetainerPeriodsReplaceRequest extends BaseFormRequest
 
     public function withValidator(Validator $validator): void
     {
-        $validator->after(function ($v) {
-            $periods = collect($this->input('periods', []))
-                ->sortBy('starts_at')->values()->all();
-            for ($i = 1; $i < count($periods); $i++) {
-                if ($periods[$i]['starts_at'] <= $periods[$i - 1]['ends_at']) {
+        $validator->after(function ($v): void {
+            /** @var array<int, array{starts_at: string, ends_at: string, seconds_allocated: int}> $input */
+            $input = $this->input('periods', []);
+            usort($input, fn (array $a, array $b): int => strcmp($a['starts_at'], $b['starts_at']));
+            for ($i = 1; $i < count($input); $i++) {
+                if ($input[$i]['starts_at'] <= $input[$i - 1]['ends_at']) {
                     $v->errors()->add('periods', 'Periods must not overlap.');
+
                     return;
                 }
             }

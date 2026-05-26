@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Requests\V1\Retainer;
 
-use App\Models\Retainer;
 use App\Http\Requests\V1\BaseFormRequest;
+use App\Models\Retainer;
 use Illuminate\Validation\Rule;
 
 class RetainerProjectCapStoreRequest extends BaseFormRequest

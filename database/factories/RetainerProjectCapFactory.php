@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -27,7 +28,7 @@ class RetainerProjectCapFactory extends Factory
 
     public function configure(): self
     {
-        return $this->afterMaking(function (RetainerProjectCap $cap) {
+        return $this->afterMaking(function (RetainerProjectCap $cap): void {
             if ($cap->project_id === null) {
                 $retainer = $cap->retainer ?? Retainer::find($cap->retainer_id);
                 $project = Project::factory()->create([

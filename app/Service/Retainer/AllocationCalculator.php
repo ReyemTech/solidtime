@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Retainer;
@@ -60,6 +61,7 @@ class AllocationCalculator
                     $allocated += (int) round(($effDays / $fullDays) * $rate);
                 }
                 $cursor = $nextPeriodStart->copy();
+
                 continue;
             }
 
@@ -110,6 +112,7 @@ class AllocationCalculator
 
             if ($pNextStart->lte($asOf)) {
                 $allocated += $p->seconds_allocated;
+
                 continue;
             }
             if ($pStart->gte($asOf)) {

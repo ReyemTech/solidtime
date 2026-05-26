@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
@@ -40,6 +41,7 @@ class RetainerProjectCapController extends Controller
         $this->checkRetainerBelongsToOrganization($organization, $retainer);
 
         $cap = $retainer->projectCaps()->create($request->validated());
+
         return (new RetainerProjectCapResource($cap))->response()->setStatusCode(201);
     }
 
@@ -53,6 +55,7 @@ class RetainerProjectCapController extends Controller
 
         $cap->fill($request->validated());
         $cap->save();
+
         return new RetainerProjectCapResource($cap);
     }
 
@@ -64,6 +67,7 @@ class RetainerProjectCapController extends Controller
             throw new AuthorizationException('Cap does not belong to retainer');
         }
         $cap->delete();
+
         return new JsonResponse(null, 204);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Requests\V1\Retainer;
@@ -8,8 +9,8 @@ use App\Enums\RetainerHardCapScope;
 use App\Enums\RetainerPeriodMode;
 use App\Enums\RetainerPeriodUnit;
 use App\Enums\RetainerSubCapMode;
-use App\Models\Organization;
 use App\Http\Requests\V1\BaseFormRequest;
+use App\Models\Organization;
 use Illuminate\Validation\Rule;
 
 class RetainerStoreRequest extends BaseFormRequest

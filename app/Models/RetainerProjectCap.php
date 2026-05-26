@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -20,6 +21,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
  * @property int|null $seconds_cumulative
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static RetainerProjectCapFactory factory()
  */
 class RetainerProjectCap extends Model implements AuditableContract

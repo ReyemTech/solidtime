@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -43,7 +44,7 @@ class RetainerFactory extends Factory
 
     public function configure(): self
     {
-        return $this->afterMaking(function (Retainer $retainer) {
+        return $this->afterMaking(function (Retainer $retainer): void {
             if ($retainer->client_id === null) {
                 $client = Client::factory()->create(['organization_id' => $retainer->organization_id]);
                 $retainer->client_id = $client->id;

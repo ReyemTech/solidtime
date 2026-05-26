@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Resources\V1\Retainer;
 
+use App\Http\Resources\V1\BaseResource;
 use App\Models\RetainerPeriod;
 use Illuminate\Http\Request;
-use App\Http\Resources\V1\BaseResource;
 
 /**
  * @property RetainerPeriod $resource

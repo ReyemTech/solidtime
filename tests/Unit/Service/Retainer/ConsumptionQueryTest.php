@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Service\Retainer;
@@ -34,6 +35,7 @@ class ConsumptionQueryTest extends TestCase
         $member = Member::factory()->forUser($user)->forOrganization($org)->create();
         $client = Client::factory()->create(['organization_id' => $org->id]);
         $project = Project::factory()->create(['organization_id' => $org->id, 'client_id' => $client->id]);
+
         return compact('org', 'user', 'member', 'client', 'project');
     }
 

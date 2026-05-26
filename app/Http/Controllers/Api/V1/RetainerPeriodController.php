@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
@@ -20,7 +21,7 @@ class RetainerPeriodController extends Controller
             throw new AuthorizationException('Retainer does not belong to organization');
         }
 
-        DB::transaction(function () use ($retainer, $request) {
+        DB::transaction(function () use ($retainer, $request): void {
             $retainer->periods()->delete();
             foreach ($request->input('periods') as $p) {
                 $retainer->periods()->create([

@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Service\Retainer;
 
-use App\Enums\RetainerHardCapEnforcement;
-use App\Enums\RetainerHardCapScope;
 use App\Exceptions\Api\RetainerCapExceededException;
 use App\Models\Client;
 use App\Models\Member;
@@ -120,6 +119,7 @@ class CapEnforcerTest extends TestCase
             'billable' => $billable,
         ]);
         $entry->setRelation('project', $project);
+
         return $entry;
     }
 }
