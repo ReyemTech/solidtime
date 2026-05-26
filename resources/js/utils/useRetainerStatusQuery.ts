@@ -11,6 +11,14 @@ export interface RetainerStatus {
     percent: number;
     hard_cap_enabled: boolean;
     hard_cap_scope: string | null;
+    current_period: {
+        starts_at: string;
+        ends_at: string;
+        allocated_seconds: number;
+        tracked_seconds: number;
+        delta_seconds: number;
+        percent: number;
+    } | null;
 }
 
 export function useRetainerStatusQuery(retainerId: MaybeRefOrGetter<string | null>) {

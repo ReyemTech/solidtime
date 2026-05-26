@@ -13,6 +13,7 @@ use App\Models\Client;
 use App\Models\Organization;
 use App\Models\Retainer;
 use App\Service\Retainer\AllocationCalculator;
+use App\Service\Retainer\ConsumptionQuery;
 use App\Service\Retainer\RetainerCache;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -107,6 +108,7 @@ class RetainerController extends Controller
         Request $request,
         AllocationCalculator $calculator,
         RetainerCache $cache,
+        ConsumptionQuery $consumption,
     ): RetainerStatusResource {
         $this->checkPermission($organization, 'retainers:view');
         $this->checkRetainerBelongsToOrganization($organization, $retainer);
@@ -120,6 +122,31 @@ class RetainerController extends Controller
         $delta = $tracked - $allocated;
         $percent = $allocated > 0 ? round($tracked / $allocated, 4) : 0.0;
 
+        // Per-period view: compute uncached (one extra query per page load is acceptable;
+        // caching the period window would require key management per window start/end pair,
+        // which adds invalidation surface area without meaningful benefit for a display endpoint).
+        $periodBounds = $calculator->currentPeriodBounds($retainer, $asOf);
+        if ($periodBounds !== null) {
+            $periodTracked = $consumption->computeTrackedInWindow(
+                $retainer,
+                $periodBounds['starts_at']->copy()->startOfDay(),
+                $periodBounds['ends_at']->copy()->endOfDay(),
+            );
+            $periodAllocated = $periodBounds['seconds_allocated'];
+            $periodDelta = $periodTracked - $periodAllocated;
+            $periodPercent = $periodAllocated > 0 ? round($periodTracked / $periodAllocated, 4) : 0.0;
+            $currentPeriod = [
+                'starts_at' => $periodBounds['starts_at']->toDateString(),
+                'ends_at' => $periodBounds['ends_at']->toDateString(),
+                'allocated_seconds' => $periodAllocated,
+                'tracked_seconds' => $periodTracked,
+                'delta_seconds' => $periodDelta,
+                'percent' => $periodPercent,
+            ];
+        } else {
+            $currentPeriod = null;
+        }
+
         return new RetainerStatusResource([
             'as_of' => $asOf->toDateString(),
             'allocated_seconds' => $allocated,
@@ -128,6 +155,7 @@ class RetainerController extends Controller
             'percent' => $percent,
             'hard_cap_enabled' => $retainer->hard_cap_enabled,
             'hard_cap_scope' => $retainer->hard_cap_scope?->value,
+            'current_period' => $currentPeriod,
         ]);
     }
 

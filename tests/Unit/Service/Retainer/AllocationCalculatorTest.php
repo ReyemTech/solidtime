@@ -176,4 +176,86 @@ class AllocationCalculatorTest extends TestCase
         $result = $this->calculator->computeAllocated($retainer, Carbon::parse('2026-12-31'));
         $this->assertEqualsWithDelta(80 * 3600, $result, 3600);
     }
+
+    // ── currentPeriodBounds ──────────────────────────────────────────────────
+
+    public function test_current_period_bounds_calendar_weekly(): void
+    {
+        $retainer = Retainer::factory()->make([
+            'period_mode' => RetainerPeriodMode::Calendar,
+            'period_unit' => RetainerPeriodUnit::Weekly,
+            'seconds_per_period' => 10 * 3600,
+            'starts_at' => Carbon::parse('2026-05-18'), // Monday
+        ]);
+
+        // Tuesday 2026-05-26 → period should be Mon May 25 to Sun May 31
+        $bounds = $this->calculator->currentPeriodBounds($retainer, Carbon::parse('2026-05-26'));
+        $this->assertSame('2026-05-25', $bounds['starts_at']->toDateString());
+        $this->assertSame('2026-05-31', $bounds['ends_at']->toDateString());
+        $this->assertSame(10 * 3600, $bounds['seconds_allocated']);
+    }
+
+    public function test_current_period_bounds_calendar_monthly(): void
+    {
+        $retainer = Retainer::factory()->make([
+            'period_mode' => RetainerPeriodMode::Calendar,
+            'period_unit' => RetainerPeriodUnit::Monthly,
+            'seconds_per_period' => 40 * 3600,
+            'starts_at' => Carbon::parse('2026-05-01'),
+        ]);
+
+        $bounds = $this->calculator->currentPeriodBounds($retainer, Carbon::parse('2026-05-26'));
+        $this->assertSame('2026-05-01', $bounds['starts_at']->toDateString());
+        $this->assertSame('2026-05-31', $bounds['ends_at']->toDateString());
+        $this->assertSame(40 * 3600, $bounds['seconds_allocated']);
+    }
+
+    public function test_current_period_bounds_full_allocation_even_if_retainer_started_mid_period(): void
+    {
+        $retainer = Retainer::factory()->make([
+            'period_mode' => RetainerPeriodMode::Calendar,
+            'period_unit' => RetainerPeriodUnit::Weekly,
+            'seconds_per_period' => 10 * 3600,
+            'starts_at' => Carbon::parse('2026-05-20'), // Wednesday
+        ]);
+
+        // Same week (May 18-24 calendar week), but retainer started Wed
+        // Per spec: full 10h shown for "this week", proration only on cumulative
+        $bounds = $this->calculator->currentPeriodBounds($retainer, Carbon::parse('2026-05-22'));
+        $this->assertSame(10 * 3600, $bounds['seconds_allocated']);
+        $this->assertSame('2026-05-18', $bounds['starts_at']->toDateString());
+        $this->assertSame('2026-05-24', $bounds['ends_at']->toDateString());
+    }
+
+    public function test_current_period_bounds_returns_null_before_starts_at(): void
+    {
+        $retainer = Retainer::factory()->make([
+            'period_mode' => RetainerPeriodMode::Calendar,
+            'period_unit' => RetainerPeriodUnit::Weekly,
+            'seconds_per_period' => 10 * 3600,
+            'starts_at' => Carbon::parse('2026-06-01'),
+        ]);
+        $this->assertNull($this->calculator->currentPeriodBounds($retainer, Carbon::parse('2026-05-15')));
+    }
+
+    public function test_current_period_bounds_explicit_mode_returns_matching_row(): void
+    {
+        $retainer = Retainer::factory()->create([
+            'period_mode' => RetainerPeriodMode::Explicit,
+            'period_unit' => null,
+            'seconds_per_period' => null,
+            'starts_at' => Carbon::parse('2026-01-01'),
+        ]);
+        $retainer->periods()->create([
+            'starts_at' => '2026-01-01', 'ends_at' => '2026-01-31', 'seconds_allocated' => 40 * 3600,
+        ]);
+        $retainer->periods()->create([
+            'starts_at' => '2026-02-01', 'ends_at' => '2026-02-28', 'seconds_allocated' => 60 * 3600,
+        ]);
+
+        $bounds = $this->calculator->currentPeriodBounds($retainer, Carbon::parse('2026-02-14'));
+        $this->assertSame('2026-02-01', $bounds['starts_at']->toDateString());
+        $this->assertSame('2026-02-28', $bounds['ends_at']->toDateString());
+        $this->assertSame(60 * 3600, $bounds['seconds_allocated']);
+    }
 }

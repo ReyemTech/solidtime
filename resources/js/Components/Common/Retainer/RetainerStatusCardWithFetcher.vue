@@ -9,6 +9,7 @@ interface RetainerSummary {
     period_unit: string | null;
     seconds_per_period: number | null;
     hard_cap_enabled: boolean;
+    starts_at: string | null;
 }
 
 const props = defineProps<{ retainer: RetainerSummary }>();

@@ -135,6 +135,113 @@ class AllocationCalculator
         return (int) $a->copy()->startOfDay()->utc()->diffInDays($b->copy()->startOfDay()->utc(), absolute: true);
     }
 
+    /**
+     * Returns the calendar bounds of the period that contains $asOf, plus the FULL (un-prorated)
+     * seconds_allocated for that period.
+     *
+     * Returns null if $asOf is before retainer->starts_at or after retainer->ends_at.
+     *
+     * For calendar/anchor modes the full period is returned even if the retainer started mid-period
+     * (e.g. a weekly retainer that started on a Wednesday still shows the full Mon–Sun bounds and
+     * the full seconds_per_period allocation). Proration is only applied to the cumulative view.
+     *
+     * @return array{starts_at: Carbon, ends_at: Carbon, seconds_allocated: int}|null
+     */
+    public function currentPeriodBounds(Retainer $retainer, Carbon $asOf): ?array
+    {
+        $asOfDay = $asOf->copy()->startOfDay();
+
+        // Before retainer starts
+        if ($asOfDay->lt($retainer->starts_at->copy()->startOfDay())) {
+            return null;
+        }
+
+        // After retainer ends
+        if ($retainer->ends_at !== null && $asOfDay->gt($retainer->ends_at->copy()->startOfDay())) {
+            return null;
+        }
+
+        return match ($retainer->period_mode) {
+            RetainerPeriodMode::Calendar => $this->currentPeriodBoundsRecurring($retainer, $asOfDay, anchored: false),
+            RetainerPeriodMode::Anchor => $this->currentPeriodBoundsRecurring($retainer, $asOfDay, anchored: true),
+            RetainerPeriodMode::Explicit => $this->currentPeriodBoundsExplicit($retainer, $asOfDay),
+        };
+    }
+
+    /**
+     * @return array{starts_at: Carbon, ends_at: Carbon, seconds_allocated: int}
+     */
+    private function currentPeriodBoundsRecurring(Retainer $retainer, Carbon $asOf, bool $anchored): array
+    {
+        if ($retainer->period_unit === null || $retainer->seconds_per_period === null) {
+            throw new InvalidArgumentException('Recurring retainer requires period_unit and seconds_per_period');
+        }
+
+        // Compute the calendar-period start that contains $asOf (ignoring retainer's own starts_at)
+        $periodStart = $anchored
+            ? $this->anchorPeriodStartFor($retainer->anchor_date, $retainer->period_unit, $asOf)
+            : $this->periodStartFor($asOf, $retainer->period_unit);
+
+        $periodEnd = $this->periodEndFor($periodStart, $retainer->period_unit, $anchored);
+
+        return [
+            'starts_at' => $periodStart->copy()->startOfDay(),
+            'ends_at' => $periodEnd->copy()->startOfDay(),
+            'seconds_allocated' => $retainer->seconds_per_period,
+        ];
+    }
+
+    /**
+     * For anchor mode: walk forward from anchor_date to find the period containing $asOf.
+     */
+    private function anchorPeriodStartFor(Carbon $anchorDate, RetainerPeriodUnit $unit, Carbon $asOf): Carbon
+    {
+        $cursor = $anchorDate->copy()->startOfDay();
+        // Walk forward until cursor > asOf, then step back
+        while ($cursor->lte($asOf)) {
+            $next = $this->nextPeriodStartFor($cursor, $unit, anchored: true);
+            if ($next->gt($asOf)) {
+                break;
+            }
+            $cursor = $next;
+        }
+
+        return $cursor;
+    }
+
+    /**
+     * Returns the last day (inclusive) of the period starting at $periodStart.
+     */
+    private function periodEndFor(Carbon $periodStart, RetainerPeriodUnit $unit, bool $anchored): Carbon
+    {
+        $nextStart = $this->nextPeriodStartFor($periodStart, $unit, $anchored);
+
+        return $nextStart->copy()->subDay()->startOfDay();
+    }
+
+    /**
+     * @return array{starts_at: Carbon, ends_at: Carbon, seconds_allocated: int}|null
+     */
+    private function currentPeriodBoundsExplicit(Retainer $retainer, Carbon $asOf): ?array
+    {
+        $periods = $retainer->periods()->orderBy('starts_at')->get();
+
+        foreach ($periods as $p) {
+            $pStart = $p->starts_at->copy()->startOfDay();
+            $pEnd = $p->ends_at->copy()->startOfDay();
+
+            if ($asOf->between($pStart, $pEnd)) {
+                return [
+                    'starts_at' => $pStart,
+                    'ends_at' => $pEnd,
+                    'seconds_allocated' => (int) $p->seconds_allocated,
+                ];
+            }
+        }
+
+        return null;
+    }
+
     private function periodStartFor(Carbon $date, RetainerPeriodUnit $unit): Carbon
     {
         return match ($unit) {

@@ -130,7 +130,10 @@ class RetainerEndpointTest extends ApiEndpointTestAbstract
         ]).'?as_of=2026-06-30');
 
         $response->assertOk()->assertJsonStructure([
-            'data' => ['as_of', 'allocated_seconds', 'tracked_seconds', 'delta_seconds', 'percent'],
+            'data' => [
+                'as_of', 'allocated_seconds', 'tracked_seconds', 'delta_seconds', 'percent',
+                'current_period' => ['starts_at', 'ends_at', 'allocated_seconds', 'tracked_seconds', 'delta_seconds', 'percent'],
+            ],
         ]);
     }
 

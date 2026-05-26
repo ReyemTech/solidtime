@@ -173,4 +173,26 @@ class ConsumptionQueryTest extends TestCase
 
         $this->assertSame(0, $this->query->computeTracked($retainer, Carbon::parse('2026-06-30 23:59:59')));
     }
+
+    public function test_compute_tracked_in_window_respects_custom_bounds(): void
+    {
+        $ctx = $this->makeContext();
+        $this->makeEntry($ctx, '2026-05-20 09:00', '2026-05-20 11:00'); // 2h before window
+        $this->makeEntry($ctx, '2026-05-25 09:00', '2026-05-25 12:00'); // 3h inside window
+        $this->makeEntry($ctx, '2026-06-01 09:00', '2026-06-01 10:00'); // 1h after window
+
+        $retainer = Retainer::factory()->create([
+            'organization_id' => $ctx['org']->id,
+            'client_id' => $ctx['client']->id,
+            'starts_at' => '2026-05-01',
+            'billable_only' => true,
+        ]);
+
+        $result = $this->query->computeTrackedInWindow(
+            $retainer,
+            Carbon::parse('2026-05-25 00:00'),
+            Carbon::parse('2026-05-31 23:59:59'),
+        );
+        $this->assertSame(3 * 3600, $result);
+    }
 }
