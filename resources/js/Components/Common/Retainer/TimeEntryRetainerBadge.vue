@@ -16,11 +16,21 @@ const clientId = computed<string | null>(() => {
 
 const { retainers } = useRetainersForClientQuery(clientId);
 
+interface RetainerSummary {
+    id: string;
+    name: string;
+    starts_at: string;
+    ends_at: string | null;
+    period_unit: string | null;
+    seconds_per_period: number | null;
+    hard_cap_enabled: boolean;
+}
+
 const activeRetainer = computed(() => {
     const today = new Date().toISOString().slice(0, 10);
     return (
-        retainers.value.find(
-            (r: any) =>
+        (retainers.value as RetainerSummary[]).find(
+            (r) =>
                 r.starts_at <= today && (r.ends_at === null || r.ends_at >= today)
         ) ?? null
     );

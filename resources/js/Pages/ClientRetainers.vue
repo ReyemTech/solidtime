@@ -4,14 +4,29 @@ import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { UserCircleIcon, ChevronRightIcon } from '@heroicons/vue/20/solid';
 import { Link } from '@inertiajs/vue3';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import PageTitle from '@/Components/Common/PageTitle.vue';
 import { useRetainersForClientQuery } from '@/utils/useRetainersQuery';
 import { useRetainersStore } from '@/utils/useRetainers';
 import RetainerStatusCardWithFetcher from '@/Components/Common/Retainer/RetainerStatusCardWithFetcher.vue';
 import RetainerCreateModal from '@/Components/Common/Retainer/RetainerCreateModal.vue';
 import RetainerEditModal from '@/Components/Common/Retainer/RetainerEditModal.vue';
+
+type Retainer = {
+    id: string;
+    name: string;
+    period_mode: string;
+    period_unit: string;
+    seconds_per_period: number | null;
+    anchor_date: string | null;
+    starts_at: string | null;
+    ends_at: string | null;
+    billable_only: boolean;
+    hard_cap_enabled: boolean;
+    hard_cap_scope: string;
+    hard_cap_enforcement: string;
+    hard_cap_cumulative_seconds: number | null;
+    sub_cap_mode: string;
+};
 
 const props = defineProps<{
     client: { id: string; name: string };
@@ -21,10 +36,10 @@ const { retainers, isLoading } = useRetainersForClientQuery(() => props.client.i
 
 const showCreate = ref(false);
 const showEdit = ref(false);
-const editingRetainer = ref<any | null>(null);
+const editingRetainer = ref<Retainer | null>(null);
 const retainersStore = useRetainersStore();
 
-function openEdit(retainer: any) {
+function openEdit(retainer: Retainer) {
     editingRetainer.value = retainer;
     showEdit.value = true;
 }
