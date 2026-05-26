@@ -108,5 +108,8 @@ class AppServiceProvider extends ServiceProvider
         Route::model('member', Member::class);
         Route::model('invitation', OrganizationInvitation::class);
         Route::model('apiToken', Token::class);
+
+        // Observers
+        TimeEntry::observe(\App\Observers\TimeEntryRetainerObserver::class);
     }
 }
