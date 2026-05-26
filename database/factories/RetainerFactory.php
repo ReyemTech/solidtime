@@ -21,13 +21,10 @@ class RetainerFactory extends Factory
 
     public function definition(): array
     {
-        $organization = Organization::factory()->create();
-        $client = Client::factory()->create(['organization_id' => $organization->id]);
-
         return [
-            'organization_id' => $organization->id,
-            'client_id' => $client->id,
-            'name' => 'Retainer for '.$client->name,
+            'organization_id' => Organization::factory(),
+            'client_id' => null,
+            'name' => 'Retainer for client',
             'description' => null,
             'period_mode' => RetainerPeriodMode::Calendar,
             'period_unit' => RetainerPeriodUnit::Monthly,
@@ -44,16 +41,25 @@ class RetainerFactory extends Factory
         ];
     }
 
+    public function configure(): self
+    {
+        return $this->afterMaking(function (Retainer $retainer) {
+            if ($retainer->client_id === null) {
+                $client = Client::factory()->create(['organization_id' => $retainer->organization_id]);
+                $retainer->client_id = $client->id;
+                if ($retainer->name === 'Retainer for client') {
+                    $retainer->name = 'Retainer for '.$client->name;
+                }
+            }
+        });
+    }
+
     public function forOrganization(Organization $organization): self
     {
-        return $this->state(function () use ($organization) {
-            $client = Client::factory()->create(['organization_id' => $organization->id]);
-
-            return [
-                'organization_id' => $organization->id,
-                'client_id' => $client->id,
-            ];
-        });
+        return $this->state(fn () => [
+            'organization_id' => $organization->id,
+            'client_id' => null,
+        ]);
     }
 
     public function withHardCap(string $scope = 'per_period', string $enforcement = 'block'): self

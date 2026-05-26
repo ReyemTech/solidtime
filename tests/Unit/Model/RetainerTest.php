@@ -8,6 +8,7 @@ use App\Enums\RetainerPeriodUnit;
 use App\Models\Client;
 use App\Models\Organization;
 use App\Models\Retainer;
+use App\Models\RetainerProjectCap;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,5 +35,17 @@ class RetainerTest extends TestCase
         $this->assertTrue($retainer->billable_only);
         $this->assertFalse($retainer->hard_cap_enabled);
         $this->assertSame(40 * 3600, $retainer->seconds_per_period);
+    }
+
+    public function test_retainer_project_cap_factory_creates_project_under_retainer_client(): void
+    {
+        $cap = RetainerProjectCap::factory()->create();
+        $retainer = $cap->retainer;
+        $project = $cap->project;
+
+        $this->assertNotNull($retainer);
+        $this->assertNotNull($project);
+        $this->assertSame($retainer->organization_id, $project->organization_id);
+        $this->assertSame($retainer->client_id, $project->client_id);
     }
 }
