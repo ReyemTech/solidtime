@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\ProjectMemberController;
 use App\Http\Controllers\Api\V1\Public\ReportController as PublicReportController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RetainerController;
+use App\Http\Controllers\Api\V1\RetainerPeriodController;
 use App\Http\Controllers\Api\V1\RetainerProjectCapController;
 use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\TaskController;
@@ -193,6 +194,8 @@ Route::prefix('v1')->name('v1.')->group(static function (): void {
             Route::post('/retainers/{retainer}/project-caps', [RetainerProjectCapController::class, 'store'])->name('project-caps.store')->middleware('check-organization-blocked');
             Route::put('/retainers/{retainer}/project-caps/{cap}', [RetainerProjectCapController::class, 'update'])->name('project-caps.update')->middleware('check-organization-blocked');
             Route::delete('/retainers/{retainer}/project-caps/{cap}', [RetainerProjectCapController::class, 'destroy'])->name('project-caps.destroy')->middleware('check-organization-blocked');
+
+            Route::put('/retainers/{retainer}/periods', [RetainerPeriodController::class, 'replace'])->name('periods.replace')->middleware('check-organization-blocked');
         });
     });
 
